@@ -1,0 +1,50 @@
+# 公安局登录账号密码
+dataGaj:
+  loginAccount: "gajlh"
+  loginPwd: "000000"
+# 坐席员登录账号密码
+dataZxy:
+  loginAccount: "zxylh"
+  loginPwd: "000000"
+# 上报接口数据
+dataReport:
+  actionLabel: "上报"
+  actionName: "report"
+  address: "北京市东城区中华路甲10号"
+  addressStr: ""
+  areaRegionCode: "0101"
+  areaRegionName: "蚕庄"
+  commRegionCode: ""
+  commRegionName: ""
+  coordX: 116.40387397
+  coordY: 39.91488908
+  eventDesc: "pytest测试上报事件"
+  eventGradeId: 1
+  eventGradeName: "一般"
+  eventSrcName: ""
+  eventSubtypeCode: "0402"
+  eventSubtypeName: "影响车辆行走"
+  eventTypeCode: "0400"
+  eventTypeName: "街面秩序"
+  regionName: ""
+  roleIds: 21
+  streetRegionCode: "010101"
+  streetRegionName: "幸福街道"
+  testCount: 1
+# 打开事件列表接口数据,userId默认为0，具体值在程序中替换
+dataOpenList:
+  pageNum: 1
+  pageSize: 100
+  queryListCode: "daibanlistNoUnit"
+  roleId: 22
+  userId: 0
+# 办结接口数据,bizId和taskId默认为0，具体值在程序中替换
+dataProcEnd:
+  actionLabel: "办结"
+  actionName: "archive"
+  bizId: 0
+  opinion: "1111111"
+  roleIds: 22
+  taskId: 0
+
+
