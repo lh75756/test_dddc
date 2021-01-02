@@ -31,12 +31,19 @@ dataReport:
   streetRegionCode: "010101"
   streetRegionName: "幸福街道"
   testCount: 1
-# 打开事件列表接口数据,userId默认为0，具体值在程序中替换
-dataOpenList:
+# 打开事件列表(坐席员待办列表)接口数据,userId默认为0，具体值在程序中替换
+dataOpenListZxyDaiban:
   pageNum: 1
   pageSize: 100
   queryListCode: "daibanlistNoUnit"
   roleId: 22
+  userId: 0
+# 打开事件列表(处置部门待办列表)接口数据,userId默认为0，具体值在程序中替换
+dataOpenListGajDaiban:
+  pageNum: 1
+  pageSize: 100
+  queryListCode: "daibanlist"
+  roleId: 21
   userId: 0
 # 办结接口数据,bizId和taskId默认为0，具体值在程序中替换
 dataProcEnd:
@@ -46,5 +53,13 @@ dataProcEnd:
   opinion: "1111111"
   roleIds: 22
   taskId: 0
+# 认领接口数据,bizId和taskId默认为0，具体值在程序中替换
+dataAssignTask:
+  actionLabel: "认领"
+  actionName: "assign"
+  bizId: 0
+  roleIds: 21
+  taskId: 0
+
 
 
