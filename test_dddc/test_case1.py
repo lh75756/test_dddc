@@ -19,7 +19,6 @@ class TestDDDC:
     urlUc = "http://172.15.33.65:27012//user/login"
     # env =yaml.safe_load(open("env.yaml"))
     # urlUc = str(urlUc).replace("testing-url",env["url"]["urlUc"])
-
     # 登录接口
     @pytest.fixture()
     def logingaj(self):
@@ -59,6 +58,43 @@ class TestDDDC:
         else:
             return "请求失败!"
 
+    # 打开坐席员待办事件列表接口
+    @pytest.fixture()
+    def openListZxyDaiban(self,loginzxy):
+        urlLC = "http://testing-url/cooperative_governance_server/event/openList"
+        # 读取配置文件
+        env = yaml.safe_load(open("env.yaml"))
+        # 替换testing-url
+        urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
+        headers = {"Content-Type": "application/json","token": f"{loginzxy[0]}"}
+        data = yaml.safe_load(open("data.yaml",encoding='utf-8'))
+        dataOpenListZxyDaiban = data["dataOpenListZxyDaiban"]
+        dataOpenListZxyDaiban["userId"] = f"{loginzxy[1]}"
+        dataOpenListZxyDaiban = json.dumps(dataOpenListZxyDaiban)
+        print(dataOpenListZxyDaiban)
+        re = requests.post(url=urlLC, data=dataOpenListZxyDaiban, headers=headers)
+        response = json.loads(re.text,encoding='utf-8')
+        print(response)
+        return response
+    # 打开处置单位待办事件列表接口
+    @pytest.fixture()
+    def OpenListGajDaiban(self,logingaj):
+        urlLC = "http://testing-url/cooperative_governance_server/event/openList"
+        # 读取配置文件
+        env = yaml.safe_load(open("env.yaml"))
+        # 替换testing-url
+        urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
+        headers = {"Content-Type": "application/json","token": f"{logingaj[0]}"}
+        data = yaml.safe_load(open("data.yaml",encoding='utf-8'))
+        dataOpenListGajDaiban = data["dataOpenListGajDaiban"]
+        dataOpenListGajDaiban["userId"] = f"{logingaj[1]}"
+        dataOpenListGajDaiban = json.dumps(dataOpenListGajDaiban)
+        print(dataOpenListGajDaiban)
+        re = requests.post(url=urlLC, data=dataOpenListGajDaiban, headers=headers)
+        response = json.loads(re.text,encoding='utf-8')
+        print(response)
+        return response
+
     # 上报接口
     def test_report(self, logingaj):
         urlLC = "http://testing-url/cooperative_governance_server/event/saveReport"
@@ -83,36 +119,21 @@ class TestDDDC:
     # 2.bizId和taskId的处理问题，是使用return方式获取bizId和taskId还是直接对bizId和taskId进行赋值
     # 3.对无事件可办结情况的判断（一是待办事件列表中无数据，二是待办待办事件列表中有数据但是不能进行办结）
     # 办结接口
-    def test_procEnd(self, loginzxy):
+    def test_procEnd(self, loginzxy,openListZxyDaiban):
         # 替换事件办结接口url
-        urlLC = "http://testing-url/cooperative_governance_server/event/openList"
+        urlLC = "http://testing-url/cooperative_governance_server/dispatching/procEnd"
         env = yaml.safe_load(open("env.yaml"))
-        urlLC = str(urlLC).replace("testing-url", env["url"]["urlLC"])
-        # 替换打开事件类表接口url
-        urlLC1 = "http://testing-url/cooperative_governance_server/dispatching/procEnd"
-        env = yaml.safe_load(open("env.yaml"))
-        urlLC1 = str(urlLC1).replace("testing-url",env["url"]["urlLC"])
-
+        urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
         headers = {"ConTent-Type": "application/json", "token": f"{loginzxy[0]}", "userId": f"{loginzxy[1]}"}
         print("login返回登录userId")
         print(f"{loginzxy[0]}")
         print(f"{loginzxy[1]}")
-        headers1 = {"Content-Type": "application/json", "token": f"{loginzxy[0]}"}
-
-        data = yaml.safe_load(open("data.yaml",encoding='utf-8'))
-        dataOpenListZxyDaiban = data["dataOpenListZxyDaiban"]
-        dataOpenListZxyDaiban["userId"] = f"{loginzxy[1]}"
-        dataOpenListZxyDaiban = json.dumps(dataOpenListZxyDaiban)
-        print(dataOpenListZxyDaiban)
-        re1 = requests.post(url=urlLC, data=dataOpenListZxyDaiban, headers=headers1)
-        response1 = json.loads(re1.text,encoding='utf-8')
-        eventNum = response1["data"]["total"]
+        eventNum = openListZxyDaiban["data"]["total"]
         print("坐席员待办事件列表中的数量为:", eventNum)
-        mylist = response1["data"]["list"]
+        mylist = openListZxyDaiban["data"]["list"]
         mylistLen = len(mylist)
         print(type(mylist))
         print("返回列表的长度为", len(mylist))
-
         if mylistLen == 0:
             print("待办事件列表中无事件")
         # 判断待办事件列表中是否有可以办结的事件,如果有，取出bizId和taskId
@@ -132,43 +153,16 @@ class TestDDDC:
         dataProcEnd = json.dumps(dataProcEnd)
         print(dataProcEnd)
         if bizId is not None and taskId is not None:
-            re = requests.post(url=urlLC1, data=dataProcEnd, headers=headers)
+            re = requests.post(url=urlLC, data=dataProcEnd, headers=headers)
             response = json.loads(re.text, encoding='utf-8')
             print(response)
             print(re.text)
         else:
             print("待办事件列表中暂无可办结事件")
 
-    # 打开事件列表接口
-    def test_openList(self,loginzxy):
-        urlLC = "http://testing-url/cooperative_governance_server/event/openList"
-        # 读取配置文件
-        env = yaml.safe_load(open("env.yaml"))
-        # 替换testing-url
-        urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
-        headers = {"Content-Type": "application/json","token": f"{loginzxy[0]}"}
-        data = yaml.safe_load(open("data.yaml",encoding='utf-8'))
-        dataOpenListZxyDaiban = data["dataOpenListZxyDaiban"]
-        dataOpenListZxyDaiban["userId"] = f"{loginzxy[1]}"
-        dataOpenListZxyDaiban = json.dumps(dataOpenListZxyDaiban)
-        print(dataOpenListZxyDaiban)
-        re = requests.post(url=urlLC, data=dataOpenListZxyDaiban, headers=headers)
-        print(re.text)
-        assert re.status_code == 200
-
     # 认领事件接口
-    def test_assignTask(self,logingaj):
-        urlLC = "http://testing-url/cooperative_governance_server/event/openList"
-        env = yaml.safe_load(open("env.yaml"))
-        urlLC =str(urlLC).replace("testing-url",env["url"]["urlLC"])
-        headers = {"Content-Type": "application/json","token": f"{logingaj[0]}"}
-        data = yaml.safe_load(open("data.yaml",encoding='utf-8'))
-        dataOpenListGajDaiban = data["dataOpenListGajDaiban"]
-        dataOpenListGajDaiban["userId"] = f"{logingaj[1]}"
-        dataOpenListGajDaiban = json.dumps(dataOpenListGajDaiban)
-        re = requests.post(url=urlLC, data=dataOpenListGajDaiban, headers=headers)
-        response = json.loads(re.text,encoding='utf-8')
-        mylist = response["data"]["list"]
+    def test_assignTask(self,logingaj,OpenListGajDaiban):
+        mylist = OpenListGajDaiban["data"]["list"]
         mylistLen = len(mylist)
         if mylistLen == 0:
             print("待办事件列表中无事件")
@@ -183,24 +177,23 @@ class TestDDDC:
                 taskId = None
         print("bizId is:",bizId)
         print("taskId is:",taskId)
-
-        urlLC1 = "http://testing-url/cooperative_governance_server/dispatching/assignTask"
+        urlLC = "http://testing-url/cooperative_governance_server/dispatching/assignTask"
         env = yaml.safe_load(open("env.yaml"))
-        urlLC1 = str(urlLC1).replace("testing-url",env["url"]["urlLC"])
-        headers1 = {"Content-Type": "application/json","token": f"{logingaj[0]}","userId": f"{logingaj[1]}"}
+        urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
+        headers = {"Content-Type": "application/json","token": f"{logingaj[0]}","userId": f"{logingaj[1]}"}
         print(f"{logingaj[0]}")
         print(f"{logingaj[1]}")
-        data1 = yaml.safe_load(open("data.yaml",encoding='utf-8'))
-        dataAssignTask = data1["dataAssignTask"]
+        data = yaml.safe_load(open("data.yaml",encoding='utf-8'))
+        dataAssignTask = data["dataAssignTask"]
         dataAssignTask["bizId"] = bizId
         dataAssignTask["taskId"] = taskId
         dataAssignTask = json.dumps(dataAssignTask)
         print(dataAssignTask)
         if bizId is not None and taskId is not None:
-            re1 = requests.post(url=urlLC1, data=dataAssignTask, headers=headers1)
-            print(re1)
-            print(re1.text)
-            assert re1.status_code == 200
+            re = requests.post(url=urlLC, data=dataAssignTask, headers=headers)
+            print(re)
+            print(re.text)
+            assert re.status_code == 200
         else:
             print("待办事件列表中无可认领的事件")
 
