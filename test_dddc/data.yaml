@@ -38,6 +38,7 @@ dataOpenListZxyDaiban:
   queryListCode: "daibanlistNoUnit"
   roleId: 22
   userId: 0
+  groupCode: "eventList"
 # 打开事件列表(处置部门待办列表)接口数据,userId默认为0，具体值在程序中替换
 dataOpenListGajDaiban:
   pageNum: 1
@@ -45,6 +46,8 @@ dataOpenListGajDaiban:
   queryListCode: "daibanlist"
   roleId: 21
   userId: 0
+  groupCode: "eventList"
+
 # 办结接口数据,bizId和taskId默认为0，具体值在程序中替换
 dataProcEnd:
   actionLabel: "办结"
