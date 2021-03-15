@@ -21,6 +21,7 @@ class TestDDDC:
     # 上报接口
     @allure.story("上报接口测试用例")
     def test_report(self, logingaj):
+        requests.adapters.DEFAULT_RETRIES = 5
         urlLC = "http://testing-url/cooperative_governance_server/event/saveReport"
         env = yaml.safe_load(open("env.yaml"))
         urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
@@ -48,6 +49,7 @@ class TestDDDC:
     # 办结接口
     @allure.story("办结接口测试用例")
     def test_procEnd(self, loginzxy,openListZxyDaiban):
+        requests.adapters.DEFAULT_RETRIES = 5
         # 替换事件办结接口url
         urlLC = "http://testing-url/cooperative_governance_server/dispatching/procEnd"
         env = yaml.safe_load(open("env.yaml"))
@@ -94,6 +96,7 @@ class TestDDDC:
     # 认领事件接口
     @allure.story("认领接口测试用例")
     def test_assignTask(self,logingaj,OpenListGajDaiban):
+        requests.adapters.DEFAULT_RETRIES = 5
         mylist = OpenListGajDaiban["data"]["list"]
         mylistLen = len(mylist)
         if mylistLen == 0:
