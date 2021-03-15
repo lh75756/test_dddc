@@ -2,6 +2,7 @@ import pytest
 import requests
 import json
 import yaml
+import allure
 # 后续需要完成的工作:
 # 1.断言的优化，需要更加准确
 # 2.登录接口和打开事件列表接口作为公共的方法
@@ -14,9 +15,11 @@ import yaml
 # (3)json.decoder.JSONDecodeError是json的格式不对，可能是返回值为空，但是仍然去返回值里边以json的格式去拿值
 # (4)接口跑不通，请求url 请求头  请求参数这三个方面去找
 # (5)出现9100 ，oauth未登录，原因是token值传错了，应该是"token": f"{logingaj[0]}"，写成了"token": f"{logingaj}"
+@allure.feature("协同调度系统测试用例")
 class TestDDDC:
 
     # 上报接口
+    @allure.story("上报接口测试用例")
     def test_report(self, logingaj):
         urlLC = "http://testing-url/cooperative_governance_server/event/saveReport"
         env = yaml.safe_load(open("env.yaml"))
@@ -30,16 +33,20 @@ class TestDDDC:
         dataReport = json.dumps(dataReport)
         re = requests.post(url=urlLC, data=dataReport, headers=headers)
         re.encoding='utf-8'
-        print(re.content)
-        print(re.headers)
-        print(re.text)
+        with allure.step("输出请求结果"):
+            print(re.text)
         assert re.status_code == 200
-        print("token is "f"{logingaj}")
+        with allure.step("输出token值"):
+            print("token is "f"{logingaj}")
+
+        s = requests.session()
+        s.keep_alive = False
 
     # 1.返回的列表数据只是分页后的列表数据，不是全部的列表数据
     # 2.bizId和taskId的处理问题，是使用return方式获取bizId和taskId还是直接对bizId和taskId进行赋值
     # 3.对无事件可办结情况的判断（一是待办事件列表中无数据，二是待办待办事件列表中有数据但是不能进行办结）
     # 办结接口
+    @allure.story("办结接口测试用例")
     def test_procEnd(self, loginzxy,openListZxyDaiban):
         # 替换事件办结接口url
         urlLC = "http://testing-url/cooperative_governance_server/dispatching/procEnd"
@@ -81,7 +88,11 @@ class TestDDDC:
         else:
             print("待办事件列表中暂无可办结事件")
 
+        s = requests.session()
+        s.keep_alive = False
+
     # 认领事件接口
+    @allure.story("认领接口测试用例")
     def test_assignTask(self,logingaj,OpenListGajDaiban):
         mylist = OpenListGajDaiban["data"]["list"]
         mylistLen = len(mylist)
@@ -117,6 +128,9 @@ class TestDDDC:
             assert re.status_code == 200
         else:
             print("待办事件列表中无可认领的事件")
+
+        s = requests.session()
+        s.keep_alive = False
 
 
 
