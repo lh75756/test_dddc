@@ -21,12 +21,15 @@ class TestDDDC:
     # 上报接口
     @allure.story("上报接口测试用例")
     def test_report(self, logingaj):
-        requests.adapters.DEFAULT_RETRIES = 5
         urlLC = "http://testing-url/cooperative_governance_server/event/saveReport"
         env = yaml.safe_load(open("env.yaml"))
         urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
         headers = {"Content-Type": "application/json", "token": f"{logingaj[0]}"}
         # 直接读取配置文件,data的格式为{"data": {"actionLabel": "上报"}}，不是接口需要的参数格式，返回信息为参数异常
+        requests.DEFAULT_RETRIES = 5  # 增加重试连接次数
+        s = requests.session()
+        s.keep_alive = False  # 关闭多余连接
+
         # 使用data = data["data"],data的文件格式为{"actionLabel": "上报"}，是正确的接口请求格式
         data = yaml.safe_load(open("data.yaml",encoding='utf-8'))
         dataReport = data["dataReport"]
@@ -40,8 +43,7 @@ class TestDDDC:
         with allure.step("输出token值"):
             print("token is "f"{logingaj}")
 
-        s = requests.session()
-        s.keep_alive = False
+
 
     # 1.返回的列表数据只是分页后的列表数据，不是全部的列表数据
     # 2.bizId和taskId的处理问题，是使用return方式获取bizId和taskId还是直接对bizId和taskId进行赋值
@@ -49,12 +51,15 @@ class TestDDDC:
     # 办结接口
     @allure.story("办结接口测试用例")
     def test_procEnd(self, loginzxy,openListZxyDaiban):
-        requests.adapters.DEFAULT_RETRIES = 5
         # 替换事件办结接口url
         urlLC = "http://testing-url/cooperative_governance_server/dispatching/procEnd"
         env = yaml.safe_load(open("env.yaml"))
         urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
         headers = {"ConTent-Type": "application/json", "token": f"{loginzxy[0]}", "userId": f"{loginzxy[1]}"}
+        requests.DEFAULT_RETRIES = 5  # 增加重试连接次数
+        s = requests.session()
+        s.keep_alive = False  # 关闭多余连接
+
         print("login返回登录userId")
         print(f"{loginzxy[0]}")
         print(f"{loginzxy[1]}")
@@ -90,13 +95,11 @@ class TestDDDC:
         else:
             print("待办事件列表中暂无可办结事件")
 
-        s = requests.session()
-        s.keep_alive = False
+
 
     # 认领事件接口
     @allure.story("认领接口测试用例")
     def test_assignTask(self,logingaj,OpenListGajDaiban):
-        requests.adapters.DEFAULT_RETRIES = 5
         mylist = OpenListGajDaiban["data"]["list"]
         mylistLen = len(mylist)
         if mylistLen == 0:
@@ -116,6 +119,11 @@ class TestDDDC:
         env = yaml.safe_load(open("env.yaml"))
         urlLC = str(urlLC).replace("testing-url",env["url"]["urlLC"])
         headers = {"Content-Type": "application/json","token": f"{logingaj[0]}","userId": f"{logingaj[1]}"}
+
+        requests.DEFAULT_RETRIES = 5  # 增加重试连接次数
+        s = requests.session()
+        s.keep_alive = False  # 关闭多余连接
+
         print(f"{logingaj[0]}")
         print(f"{logingaj[1]}")
         data = yaml.safe_load(open("data.yaml",encoding='utf-8'))
@@ -132,8 +140,7 @@ class TestDDDC:
         else:
             print("待办事件列表中无可认领的事件")
 
-        s = requests.session()
-        s.keep_alive = False
+
 
 
 
